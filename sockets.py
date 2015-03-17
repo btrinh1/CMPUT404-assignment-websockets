@@ -87,7 +87,7 @@ def hello():
     '''Return something coherent here.. perhaps redirect to /static/index.html '''
     return flask.redirect("/static/index.html")
 
-    # read_ws function from github.com/abramhindle/WebSocketExamples/blob/master/chat.py
+# read_ws function from github.com/abramhindle/WebSocketExamples/blob/master/chat.py
 def read_ws(ws,client):
     '''A greenlet function that reads from the websocket and updates the world'''
     # OOO: TODO IMPLEMENT ME
@@ -98,8 +98,6 @@ def read_ws(ws,client):
     		if(msg != None):
     			packet = json.loads(msg)
     			# send_all_json( packet ) use a send_all_json equiv for this assn
-    			#for key in packet:
-    			#	myWorld.set(key, packet[key]) # needs more
     			# iter through and set world stuff to entity according to key
     			for name, data in packet.iteritems():
     				entity = myWorld.get(name)
@@ -124,11 +122,9 @@ def subscribe_socket(ws):
     clients.append(client)
     client.put(json.dumps(myWorld.world())) #put world to client
     event = gevent.spawn(read_ws, ws, client)
-    print "Subscribing"
     try:
         while True:
             msg = client.get()
-            #ws.send(client.get())
             print "Message: %s" %msg
             ws.send(msg)
 	    		
