@@ -90,7 +90,7 @@ def hello():
     # read_ws function from github.com/abramhindle/WebSocketExamples/blob/master/chat.py
 def read_ws(ws,client):
     '''A greenlet function that reads from the websocket and updates the world'''
-    # XXX: TODO IMPLEMENT ME
+    # OOO: TODO IMPLEMENT ME
     try:
     	while True:
     		msg = ws.receive()
@@ -99,7 +99,8 @@ def read_ws(ws,client):
     			packet = json.loads(msg)
     			# send_all_json( packet ) use a send_all_json equiv for this assn
     			#for key in packet:
-    			#	myWorld.set(key, packet[key])
+    			#	myWorld.set(key, packet[key]) # needs more
+    			# iter through and set world stuff to entity according to key
     			for name, data in packet.iteritems():
     				entity = myWorld.get(name)
 
@@ -113,15 +114,15 @@ def read_ws(ws,client):
     	''' Done '''
     return None
 
-# subscrib function https://github.com/abramhindle/WebSocketsExamples/blob/master/broadcaster.py
+# subscribe function https://github.com/abramhindle/WebSocketsExamples/blob/master/broadcaster.py
 @sockets.route('/subscribe')
 def subscribe_socket(ws):
     '''Fufill the websocket URL of /subscribe, every update notify the
        websocket and read updates from the websocket '''
-    # XXX: TODO IMPLEMENT ME
+    # OOO: TODO IMPLEMENT ME
     client = Client() #
     clients.append(client)
-    client.put(json.dumps(myWorld.world()))
+    client.put(json.dumps(myWorld.world())) #put world to client
     event = gevent.spawn(read_ws, ws, client)
     print "Subscribing"
     try:

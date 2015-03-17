@@ -40,15 +40,15 @@ function debug(str) {
     var debugDiv = document.getElementById('debug');
     debugDiv.innerHTML = "" + str;
 }
-debug("Test");
+debug("btrinh Websockets Assignment:");
 
 world = {};
 
-//XXX: TODO Make this prettier!
+//OOO: TODO Make this prettier!
 function drawCircle(context,entity) {
     with(context) {
         beginPath();                
-        lineWidth = 3;
+        lineWidth = 1;
         var x = entity["x"];
         var y = entity["y"];
         //moveTo(x,y);
@@ -64,7 +64,7 @@ function prepEntity(entity) {
         entity["colour"] = "#FF0000";
     }
     if (!entity["radius"]) {
-        entity["radius"] = 50;
+        entity["radius"] = 30;
     }
     return entity;
 }
@@ -120,14 +120,15 @@ function getPosition(e) {
 		return [x,y];
 	}
 }
-
+// use send example from my ajax to stringify and send? here or wsSetup?
 function addEntity(entity, data) {
     world[entity] = data;
-    drawNextFrame(); // (but should we?)
-    //XXX: Send a XHTML Request that updates the entity you just modified!
-    var msg = {};
-    msg[entity] = data;
-    socket.send(JSON.stringify(msg));
+    //drawNextFrame(); // (but should we?)
+    //OOO: Send a XHTML Request that updates the entity you just modified! # moved XHTML req stuff to wssetup to update properly 
+    var raw = {};
+    raw[entity] = data;
+    //jsonify our raw and send
+    socket.send(JSON.stringify(raw));
 }
 var counter = 0;
 function addEntityWithoutName(data) {
@@ -232,18 +233,18 @@ mouse = (function() {
 })();
 
 // Add the application specific mouse listeners!
-//XXX: TODO Make these prettier!
+//OOO: TODO Make these prettier!
 mouse.mousedowners.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'blue'});
+    addEntityWithoutName({'x':x,'y':y,'colour':'pink'});
 });
 
 mouse.mouseuppers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'red'});
+    addEntityWithoutName({'x':x,'y':y,'colour':'yellow'});
 });
 
 mouse.mousedraggers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'green',
-                          'radius':10});
+    addEntityWithoutName({'x':x,'y':y,'colour':'white',
+                          'radius':30});
 });
 
 
@@ -251,36 +252,65 @@ function update() {
     drawFrame();
 }
 
+/** use send example from ajax assignment /w class examples? **/
+// function sendJSONXMLHTTPRequest(url, objects, callback) {
+//     var xhr = new XMLHttpRequest();
+//     xhr.onreadystatechange = function () {
+//         if (xhr.readyState==4) {
+//             try {
+//                 if (xhr.status==200) {
+//                     //XXX: parse some JSON from the request!
+//                     //XXX: Pass the data to the callback!
+//                     var someJSON = JSON.parse(xhr.responseText);
+//                     callback(someJSON);
+//                 }
+//             } 
+//             catch(e) {
+//                 alert('Error: ' + e.name);
+//             }
+//         }
+//     };
+//     //XXX: POST to a URL
+//     //XXX: set the mimetype and the accept headers!
+//     // Remember to use application/json !
+//     xhr.open("POST", url);
+//     xhr.setRequestHeader('Content-Type', 'application/json'); // set json mimetype
+//     xhr.setRequestHeader('Accept', 'application/json');
+//     xhr.send(JSON.stringify(objects));
+// }
 
 function wsSetup() {
-    var url = "ws://"+host+"/subscribe";   
+    var url = "ws://"+host+"/subscribe";
+    var xhrurl = "http://'+host+'/world"; //xhrreq
     socket = new WebSocket(url);
-    socket.onopen = function() {
-        //XXX: TODO What are you going to do here?
-        //JSON.stringify( {"msg": messageInput.value } )?
-        
-    };
-    socket.onerror = function(msg) {
-        debug("WebSocket Error:" + msg.data);
+    socket.onopen = function() {  
+        // XMLHttpRequest here to update like we want
+        var xhr = new XMLHttpRequest();
+        // type, url, async; not post so no send necessary
+        xhr.open('GET', xhrurl, false);
+            
+        for (var key in server) {
+            world[key] = server[key]
+        }
     };
     socket.onmessage = function(msg) {  
         try {
-            debug("WebSocket Recv:" + msg.data);
-            //XXX: TODO What are you going to do here? 
-            if(msg.data == "{}"){
-                world = {}; // if empty set json reset world
-            }else {
-                var message = JSON.parse(msg.data);
-                for(val in message){
-                    world[val] = message[val]
-                }   
+            //debug("WebSocket Recv:" + msg.data); //comment out before submit
+            var message = JSON.parse(msg.data);
+            // add message equiv ? addMessage(message["msg"]);
+            for (key in message) {
+                if (world[key] != message[key]) { // when world diff
+                    world[key] = message[key];
+                    drawNextFrame(); //draw
+                }
             }
-            drawNextFrame();           
         } catch (e) {
             alert("socket on message: " + e);
         }
     }; 
-    socket.send(JSON.stringify({"world":"true"}));
+    socket.onerror = function(msg) {
+        debug("WebSocket Error:" + msg.data);
+    };
 }
 
 wsSetup();
