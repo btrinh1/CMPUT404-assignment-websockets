@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 import flask
-from flask import Flask, request
+from flask import Flask, request, make_response
 from flask_sockets import Sockets
 import gevent
 from gevent import queue
@@ -25,6 +25,16 @@ import os
 app = Flask(__name__)
 sockets = Sockets(app)
 app.debug = True
+
+class Client:
+    def __init__(self):
+        self.queue = queue.Queue()
+
+    def put(self, v):
+        self.queue.put_nowait(v)
+
+    def get(self):
+        return self.queue.get()
 
 class World:
     def __init__(self):
@@ -65,7 +75,7 @@ def set_listener( entity, data ):
     ''' do something with the update ! '''
     #for client in clients:
     #	client.put(json.dumps(myWorld.world()))
-    message = json.dumps({entity: value})
+    message = json.dumps({entity: data})
     for client in clients:
         client.put(message)
 
@@ -85,12 +95,19 @@ def read_ws(ws,client):
     	while True:
     		msg = ws.receive()
     		print "RECV: %s" % msg
-    		if(msg is not None):
+    		if(msg != None):
     			packet = json.loads(msg)
     			# send_all_json( packet ) use a send_all_json equiv for this assn
-    			for key in packet:
-    				myWorld.set(key, packet[key])
+    			#for key in packet:
+    			#	myWorld.set(key, packet[key])
+    			for name, data in packet.iteritems():
+    				entity = myWorld.get(name)
+
+    				for k, v in data.iteritems():
+    					entity[k] = v
+    				myWorld.set(name,entity)
     		else:
+    			print "MSG: %s" %msg
     			break
     except:
     	''' Done '''
@@ -104,16 +121,21 @@ def subscribe_socket(ws):
     client = Client() #
     clients.append(client)
 
+    client.put(json.dumps(myWorld.world()))
     event = gevent.spawn(read_ws, ws, client)
     try:
         while True:
-            ws.send(client.get())
+            msg = client.get()
+            #ws.send(client.get())
+            print "Message: %s" %msg
+            ws.send(msg)
+	    		
     except Exception as e: #ws error as e
         print "WS Error %s" %e
     finally:
         clients.remove(client)
         gevent.kill(event)
-    return None
+    #return None
 
 
 def flask_post_json():
@@ -129,23 +151,34 @@ def flask_post_json():
 @app.route("/entity/<entity>", methods=['POST','PUT'])
 def update(entity):
     '''update the entities via this interface'''
-    return None
+    jsonData = flask_post_json(request)
+
+    for key, value in jsonData.iteritems():
+    	myWorld.update(entity, key, value)
+    return create_response(myWorld.get(entity))
+
+# responser from ajax assignment
+def create_response(data):
+	response = make_response(json.dumps(data), 200)
+	response.headers['Content-Type'] = 'application/json'
+	return response  
 
 @app.route("/world", methods=['POST','GET'])    
 def world():
     '''you should probably return the world here'''
-    return None
+    return create_response(myWorld.world())
 
 @app.route("/entity/<entity>")    
 def get_entity(entity):
     '''This is the GET version of the entity interface, return a representation of the entity'''
-    return None
+    return create_response(myWorld.get(entity))
 
 
 @app.route("/clear", methods=['POST','GET'])
 def clear():
     '''Clear the world out!'''
-    return None
+    myWorld.clear()
+    return create_response(myWorld.world())
 
 
 
