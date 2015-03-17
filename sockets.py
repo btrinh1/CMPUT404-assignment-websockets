@@ -113,6 +113,7 @@ def read_ws(ws,client):
     	''' Done '''
     return None
 
+# subscrib function https://github.com/abramhindle/WebSocketsExamples/blob/master/broadcaster.py
 @sockets.route('/subscribe')
 def subscribe_socket(ws):
     '''Fufill the websocket URL of /subscribe, every update notify the
@@ -120,9 +121,9 @@ def subscribe_socket(ws):
     # XXX: TODO IMPLEMENT ME
     client = Client() #
     clients.append(client)
-
     client.put(json.dumps(myWorld.world()))
     event = gevent.spawn(read_ws, ws, client)
+    print "Subscribing"
     try:
         while True:
             msg = client.get()

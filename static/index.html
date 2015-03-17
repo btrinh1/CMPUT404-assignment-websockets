@@ -257,7 +257,8 @@ function wsSetup() {
     socket = new WebSocket(url);
     socket.onopen = function() {
         //XXX: TODO What are you going to do here?
-        socket.send(JSON.stringify({"world":"true"}));
+        //JSON.stringify( {"msg": messageInput.value } )?
+        
     };
     socket.onerror = function(msg) {
         debug("WebSocket Error:" + msg.data);
@@ -267,11 +268,11 @@ function wsSetup() {
             debug("WebSocket Recv:" + msg.data);
             //XXX: TODO What are you going to do here? 
             if(msg.data == "{}"){
-                world = {};
+                world = {}; // if empty set json reset world
             }else {
-                entity = JSON.parse(msg.data);
-                for(val in entity){
-                    world[val] = entity[val]
+                var message = JSON.parse(msg.data);
+                for(val in message){
+                    world[val] = message[val]
                 }   
             }
             drawNextFrame();           
@@ -279,6 +280,7 @@ function wsSetup() {
             alert("socket on message: " + e);
         }
     }; 
+    socket.send(JSON.stringify({"world":"true"}));
 }
 
 wsSetup();
