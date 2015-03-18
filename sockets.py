@@ -94,7 +94,7 @@ def read_ws(ws,client):
     try:
     	while True:
     		msg = ws.receive()
-    		print "RECV: %s" % msg
+    		#print "RECV: %s" % msg
     		if(msg != None):
     			packet = json.loads(msg)
     			# send_all_json( packet ) use a send_all_json equiv for this assn
@@ -125,7 +125,7 @@ def subscribe_socket(ws):
     try:
         while True:
             msg = client.get()
-            print "Message: %s" %msg
+            #print "Message: %s" %msg
             ws.send(msg)
 	    		
     except Exception as e: #ws error as e
