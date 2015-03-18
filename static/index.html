@@ -287,8 +287,7 @@ function wsSetup() {
         // XMLHttpRequest here to update like we want
         var xhr = new XMLHttpRequest();
         // type, url, async; not post so no send necessary
-        xhr.open('GET', xhrurl, false);
-            
+        xhr.open('GET', xhrurl, false);    
         for (var key in server) {
             world[key] = server[key]
         }
