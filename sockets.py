@@ -106,7 +106,7 @@ def read_ws(ws,client):
     					entity[k] = v 
     				myWorld.set(name,entity)
     		else:
-    			print "MSG: %s" %msg
+    			#print "MSG: %s" %msg
     			break
     except:
     	''' Done '''
