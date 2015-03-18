@@ -105,7 +105,7 @@ def read_ws(ws,client):
     				entity = myWorld.get(name)
 
     				for k, v in data.iteritems():
-    					entity[k] = v
+    					entity[k] = v 
     				myWorld.set(name,entity)
     		else:
     			print "MSG: %s" %msg
