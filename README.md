@@ -57,3 +57,15 @@ Contributors
 
 * Mark Galloway
 * Abram Hindle
+
+Resources
+===========
+* https://github.com/btrinh1/CMPUT404-assignment-ajax
+   - XHRequest examples and index.html example stuff that is applicable
+* https://github.com/abramhindle/WebSocketsExamples
+   - HTML and Python functions used as barebone/modified frequently
+* Non-formally discussed things like client.put in subscribe or readws and if world is called in subscribe etc on Slack (IM service for developers) with project group members: Ana, Daniel, Chun Han and Cameron
+* http://forums.udacity.com/questions/6021538/jsondumps-and-jsonloads
+   - JSON loads vs JSON dumps
+* https://xhr.spec.whatwg.org/#the-send()-method
+   - ignore send if GET request
