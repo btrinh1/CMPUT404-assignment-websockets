@@ -54,7 +54,8 @@ function drawCircle(context,entity) {
         //moveTo(x,y);
         fillStyle = entity["colour"];
         strokeStyle = fillStyle;
-        arc(x, y, (entity["radius"])?entity["radius"]:50, 0, 2.0 * Math.PI, false);  
+        arc(x, y, (entity["radius"])?entity["radius"]:50, 0, 2.0 * Math.PI, false);   
+        arc(-x, -y, 0, 0, 2.0 * Math.PI, false); 
         stroke();                                
     }
 }
@@ -64,7 +65,7 @@ function prepEntity(entity) {
         entity["colour"] = "#FF0000";
     }
     if (!entity["radius"]) {
-        entity["radius"] = 30;
+        entity["radius"] = 40;
     }
     return entity;
 }
@@ -235,7 +236,7 @@ mouse = (function() {
 // Add the application specific mouse listeners!
 //OOO: TODO Make these prettier!
 mouse.mousedowners.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'pink'});
+    addEntityWithoutName({'x':x,'y':y,'colour':'purple'});
 });
 
 mouse.mouseuppers.push(function(x,y,clicked,e) {
@@ -288,9 +289,6 @@ function wsSetup() {
         var xhr = new XMLHttpRequest();
         // type, url, async; not post so no send necessary
         xhr.open('GET', xhrurl, false);    
-        for (var key in server) {
-            world[key] = server[key]
-        }
     };
     socket.onmessage = function(msg) {  
         try {
